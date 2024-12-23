@@ -1,0 +1,50 @@
+---
+- name: Deploy Pods to EKS cluster
+  hosts: localhost
+  vars:
+    ansible_python_interpreter: "/home/ubuntu/myenv/bin/python"
+  gather_facts: false
+  tasks:
+    - name: Create a Deployment in Kubernetes
+      kubernetes.core.k8s:
+        kubeconfig: ~/.kube/config
+        namespace: dev
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: books
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: books
+            template:
+              metadata:
+                labels:
+                  app: books
+              spec:
+                containers:
+                  - name: books
+                    image: "061039788053.dkr.ecr.us-east-2.amazonaws.com/tom:{{ container_image_tag }}"
+                    ports:
+                      - containerPort: 8080
+
+    - name: Create a Service for the Deployment
+      kubernetes.core.k8s:
+        kubeconfig: ~/.kube/config
+        namespace: dev
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: books-svc
+            namespace: dev
+          spec:
+            selector:
+              app: books
+            ports:
+              - port: 8080
+                targetPort: 8080
+                protocol: TCP
+            type: LoadBalancer

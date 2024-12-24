@@ -46,15 +46,6 @@ pipeline {
             }
         }
 
-        stage('Terraform Plan') {
-            steps {
-                script {
-                    // Run Terraform Plan to see the changes before applying
-                    sh 'terraform plan -var "region=${AWS_REGION}" -var "cluster_name=${EKS_CLUSTER_NAME}"'
-                }
-            }
-        }
-
         stage('Terraform Apply') {
             steps {
                 script {

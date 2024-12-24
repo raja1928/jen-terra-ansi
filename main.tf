@@ -37,11 +37,9 @@ resource "aws_eks_cluster" "example" {
   name     = var.cluster_name
   role_arn = aws_iam_role.eks_cluster_role[0].arn  # Reference the created role
 
-  # Other configurations for EKS cluster...
-}
-
-vpc_config {
-    subnet_ids = aws_subnet.eks_subnets[*].id  # Reference the subnets created earlier
+  # Correct placement of the vpc_config block
+  vpc_config {
+    subnet_ids         = aws_subnet.eks_subnets[*].id  # Reference the subnets created earlier
     security_group_ids = [aws_security_group.eks_sg.id]  # Reference the security group created earlier
   }
 }

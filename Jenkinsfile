@@ -14,8 +14,8 @@ pipeline {
         dockerImage = "061039788053.dkr.ecr.us-east-2.amazonaws.com/${repoName}"
         gitCommit = "${GIT_COMMIT[0..6]}"
         dockerTag = "${params.BRANCH_NAME}-${gitCommit}"
-        AWS_REGION = "us-east-2"
-        EKS_CLUSTER_NAME = "${params.eks-cluster}"
+        aws-region = "us-east-2"
+        eks-cluster-name = "${params.eks-cluster}"
     }
      
 

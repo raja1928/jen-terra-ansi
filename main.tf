@@ -35,10 +35,12 @@ resource "aws_iam_role" "eks_cluster_role" {
   })
 }
 
-# Reference the IAM role, ensuring that we always reference the correct one
+# Reference the IAM role safely
 resource "aws_eks_cluster" "example" {
   name     = var.cluster_name
-  role_arn = lookup(data.aws_iam_role.existing_role, "arn", aws_iam_role.eks_cluster_role[0].arn)  # Use the existing role ARN or the new one
+
+  # Safe reference to either the existing or newly created role
+  role_arn = length(data.aws_iam_role.existing_role.id) > 0 ? data.aws_iam_role.existing_role.arn : aws_iam_role.eks_cluster_role[0].arn
 
   # Correct placement of the vpc_config block
   vpc_config {
@@ -54,17 +56,20 @@ resource "aws_security_group" "eks_sg" {
 }
 
 resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
-  role       = lookup(data.aws_iam_role.existing_role, "name", aws_iam_role.eks_cluster_role[0].name)  # Use the existing role name or the new one
+  # Use safe lookup for the role
+  role       = length(data.aws_iam_role.existing_role.id) > 0 ? data.aws_iam_role.existing_role.name : aws_iam_role.eks_cluster_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
 }
 
 resource "aws_iam_role_policy_attachment" "eks_vpc_policy" {
-  role       = lookup(data.aws_iam_role.existing_role, "name", aws_iam_role.eks_cluster_role[0].name)  # Use the existing role name or the new one
+  # Use safe lookup for the role
+  role       = length(data.aws_iam_role.existing_role.id) > 0 ? data.aws_iam_role.existing_role.name : aws_iam_role.eks_cluster_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_VPC_Policy"
 }
 
 resource "aws_iam_role_policy_attachment" "eks_worker_policy" {
-  role       = lookup(data.aws_iam_role.existing_role, "name", aws_iam_role.eks_cluster_role[0].name)  # Use the existing role name or the new one
+  # Use safe lookup for the role
+  role       = length(data.aws_iam_role.existing_role.id) > 0 ? data.aws_iam_role.existing_role.name : aws_iam_role.eks_cluster_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
 }
 

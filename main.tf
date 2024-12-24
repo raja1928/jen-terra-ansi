@@ -22,13 +22,6 @@ resource "aws_eks_cluster" "example" {
   }
 }
 
-data "aws_iam_roles" "existing_roles" {
-  filter {
-    name = "roleName"
-    values = ["eks-cluster-role"]
-  }
-}
-
 resource "aws_iam_role" "eks_cluster_role" {
   count = length(data.aws_iam_roles.existing_roles.roles) == 0 ? 1 : 0
 

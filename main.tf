@@ -22,7 +22,12 @@ resource "aws_eks_cluster" "example" {
   }
 }
 
+data "aws_iam_role" "existing_role" {
+  role_name = "eks-cluster-role"
+}
+
 resource "aws_iam_role" "eks_cluster_role" {
+  count = length(data.aws_iam_role.existing_role.id) == 0 ? 1 : 0
   name = "eks-cluster-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

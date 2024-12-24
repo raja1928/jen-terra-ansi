@@ -14,10 +14,12 @@ resource "aws_subnet" "eks_subnets" {
   availability_zone = element(data.aws_availability_zones.available.names, count.index)
 }
 
+# Fetch the existing IAM role (if it exists)
 data "aws_iam_role" "existing_role" {
   name = "eks-cluster-role"  # Name of the IAM role you want to check
 }
 
+# Create the IAM role only if it doesn't exist
 resource "aws_iam_role" "eks_cluster_role" {
   count              = length(data.aws_iam_role.existing_role.id) == 0 ? 1 : 0  # Only create if the role doesn't exist
   name               = "eks-cluster-role"
@@ -33,9 +35,10 @@ resource "aws_iam_role" "eks_cluster_role" {
   })
 }
 
+# Reference the IAM role, ensuring that we always reference the correct one
 resource "aws_eks_cluster" "example" {
   name     = var.cluster_name
-  role_arn = aws_iam_role.eks_cluster_role[0].arn  # Reference the created role
+  role_arn = lookup(data.aws_iam_role.existing_role, "arn", aws_iam_role.eks_cluster_role[0].arn)  # Use the existing role ARN or the new one
 
   # Correct placement of the vpc_config block
   vpc_config {
@@ -51,17 +54,17 @@ resource "aws_security_group" "eks_sg" {
 }
 
 resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
-  role       = aws_iam_role.eks_cluster_role[0].name  # Attach policies to the role
+  role       = lookup(data.aws_iam_role.existing_role, "name", aws_iam_role.eks_cluster_role[0].name)  # Use the existing role name or the new one
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
 }
 
 resource "aws_iam_role_policy_attachment" "eks_vpc_policy" {
-  role       = aws_iam_role.eks_cluster_role[0].name  # Attach policies to the role
+  role       = lookup(data.aws_iam_role.existing_role, "name", aws_iam_role.eks_cluster_role[0].name)  # Use the existing role name or the new one
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_VPC_Policy"
 }
 
 resource "aws_iam_role_policy_attachment" "eks_worker_policy" {
-  role       = aws_iam_role.eks_cluster_role[0].name  # Attach policies to the role
+  role       = lookup(data.aws_iam_role.existing_role, "name", aws_iam_role.eks_cluster_role[0].name)  # Use the existing role name or the new one
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
 }
 

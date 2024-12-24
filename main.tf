@@ -40,6 +40,12 @@ resource "aws_eks_cluster" "example" {
   # Other configurations for EKS cluster...
 }
 
+vpc_config {
+    subnet_ids = aws_subnet.eks_subnets[*].id  # Reference the subnets created earlier
+    security_group_ids = [aws_security_group.eks_sg.id]  # Reference the security group created earlier
+  }
+}
+
 resource "aws_security_group" "eks_sg" {
   name        = "eks_security_group"
   description = "EKS cluster security group"

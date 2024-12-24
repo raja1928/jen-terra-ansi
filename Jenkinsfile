@@ -21,7 +21,6 @@ pipeline {
         stage('Git Checkout') {
             steps {
                 gitCheckout("$gitRepoURL", "refs/heads/$gitBranchName", 'githubCred')
-                sh "echo ${eksClusterName}, ${ awsRegion} "
             }
         }
 

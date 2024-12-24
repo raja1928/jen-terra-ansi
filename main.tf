@@ -64,13 +64,13 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
 resource "aws_iam_role_policy_attachment" "eks_vpc_policy" {
   # Use safe lookup for the role
   role       = length(data.aws_iam_role.existing_role.id) > 0 ? data.aws_iam_role.existing_role.name : aws_iam_role.eks_cluster_role[0].name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_VPC_Policy"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
 }
 
 resource "aws_iam_role_policy_attachment" "eks_worker_policy" {
   # Use safe lookup for the role
   role       = length(data.aws_iam_role.existing_role.id) > 0 ? data.aws_iam_role.existing_role.name : aws_iam_role.eks_cluster_role[0].name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
 output "cluster_endpoint" {

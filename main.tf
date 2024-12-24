@@ -22,7 +22,7 @@ resource "aws_eks_cluster" "example" {
   }
 }
 
-sh 'terraform state rm aws_iam_role.eks_cluster_role'
+sh "terraform state rm aws_iam_role.eks_cluster_role"
 
 data "aws_iam_roles" "existing_roles" {
   filter {

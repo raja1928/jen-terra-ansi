@@ -15,7 +15,7 @@ pipeline {
         gitCommit = "${GIT_COMMIT[0..6]}"
         dockerTag = "${params.BRANCH_NAME}-${gitCommit}"
         AWS_REGION = 'us-east-2'
-        EKS_CLUSTER_NAME = "${parms.cluster_name}"
+        eksCluster = "${parms.cluster_name}"
     }
      
 
@@ -51,7 +51,7 @@ pipeline {
             steps {
                 script {
                     // Apply the Terraform configuration to create the resources
-                    sh 'terraform apply -auto-approve -var "region=${AWS_REGION}" -var "cluster_name=${EKS_CLUSTER_NAME}"'
+                    sh 'terraform apply -auto-approve -var "region=${AWS_REGION}" -var "cluster_name=${eksCluster}"'
                 }
             }
         }
@@ -61,7 +61,7 @@ pipeline {
                 script {
                     // Configure kubectl with the created EKS cluster
                     sh '''
-                    aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region ${AWS_REGION}
+                    aws eks update-kubeconfig --name ${eksCluster} --region ${AWS_REGION}
                     kubectl get svc
                     '''
                 }

@@ -5,6 +5,17 @@
     ansible_python_interpreter: "/home/ubuntu/myenv/bin/python"
   gather_facts: false
   tasks:
+    - name: Create the 'dev' namespace if it doesn't exist
+      kubernetes.core.k8s:
+        kubeconfig: ~/.kube/config
+        namespace: dev
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: dev
+          state: present
+
     - name: Create a Deployment in Kubernetes
       kubernetes.core.k8s:
         kubeconfig: ~/.kube/config
@@ -39,7 +50,6 @@
           kind: Service
           metadata:
             name: books-svc
-            namespace: dev
           spec:
             selector:
               app: books

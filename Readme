@@ -1,1 +1,15 @@
-jenins file with ansible deployment
+This is a deployement with jenkins pipeline by using below tools
+
+  GIT        - SCM used to download a jenkinsfile and other required files
+  Docker     - Use to create a multi stage build by using git,maven and tomcat.
+  ECR        - Used to send a docker image to store in ECR to get into pods while deploying
+  Terraform  - Used to create a EKS cluster.
+  Kubeconfig - Used to set the cluster context to create a EKS environment.
+  Ansible    - Used to deploy pods with application containers in above EKS cluster.
+
+Process:
+  start build and provide below perameters
+    GIT_URL     - to get Jenkinsfile
+    BRANCH_NAME - git repository branch
+    repository  - ECR repository name
+    cluster     - EKS Cluster Name

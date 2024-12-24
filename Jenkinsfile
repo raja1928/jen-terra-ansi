@@ -19,7 +19,7 @@ pipeline {
     }
      
 
-    agent {label 'docker-slave-server'}
+    agent {label 'jen-slave-med'}
     stages {
         stage('Git Checkout') {
             steps {

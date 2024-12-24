@@ -5,6 +5,7 @@ pipeline {
         string 'GIT_URL'
         string 'BRANCH_NAME'
         string 'repository'
+        string 'cluster_name'
     }
     environment {
         gitRepoURL = "${params.GIT_URL}"
@@ -14,7 +15,7 @@ pipeline {
         gitCommit = "${GIT_COMMIT[0..6]}"
         dockerTag = "${params.BRANCH_NAME}-${gitCommit}"
         AWS_REGION = 'us-east-2'
-        EKS_CLUSTER_NAME = 'raja1'
+        EKS_CLUSTER_NAME = "${parms.cluster_name}"
     }
      
 

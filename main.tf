@@ -16,10 +16,8 @@ resource "aws_subnet" "eks_subnets" {
 
 resource "aws_eks_cluster" "example" {
   name     = var.cluster_name
-  role_arn = aws_iam_role.eks_cluster_role.arn
-  vpc_config {
-    subnet_ids = aws_subnet.eks_subnets[*].id
-  }
+  role_arn = aws_iam_role.eks_cluster_role[count.index].arn  # Use count.index to reference the specific instance
+  # Other configurations...
 }
 
 data "aws_iam_role" "existing_role" {
@@ -49,18 +47,18 @@ resource "aws_security_group" "eks_sg" {
 }
 
 resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
+  role       = aws_iam_role.eks_cluster_role[count.index].name  # Use count.index here too
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role       = aws_iam_role.eks_cluster_role.name
 }
 
 resource "aws_iam_role_policy_attachment" "eks_vpc_policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = aws_iam_role.eks_cluster_role.name
+  role       = aws_iam_role.eks_cluster_role[count.index].name  # Use count.index here too
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_VPC_Policy"
 }
 
 resource "aws_iam_role_policy_attachment" "eks_worker_policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = aws_iam_role.eks_cluster_role.name
+  role       = aws_iam_role.eks_cluster_role[count.index].name  # Use count.index here too
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
 }
 
 output "cluster_endpoint" {
